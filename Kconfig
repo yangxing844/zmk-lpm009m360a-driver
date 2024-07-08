@@ -1,0 +1,6 @@
+menuconfig LPM009M360A
+		bool "LPM009M360A display driver"
+		default n
+		select SPI
+		help 
+		 Enable driver for LPM009M360A display
