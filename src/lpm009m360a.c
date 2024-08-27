@@ -27,8 +27,6 @@ struct lpm009m360a_data {
 
 struct lpm009m360a_config {
     struct spi_dt_spec bus;
-    struct gpio_dt_spec extcomin;
-    struct gpio_dt_spec disp;
     uint16_t height;
     uint16_t width;
     int rotation;
@@ -75,10 +73,7 @@ static int lpm009m360a_transmit(const struct device *dev, uint8_t cmd, uint8_t a
 static int lpm009m360a_exit_sleep(const struct device *dev) {
     int ret;
     const struct lpm009m360a_config *config = dev->config;
-    ret = gpio_pin_set_dt(&config->disp, 1);
-    if (ret < 0) {
-        return ret;
-    }
+		LOG_DBG("Exiting sleep mode");
     k_sleep(LPM009M360A_EXIT_SLEEP_TIME);
     return 0;
 }
@@ -86,10 +81,7 @@ static int lpm009m360a_exit_sleep(const struct device *dev) {
 static int lpm009m360a_sleep(const struct device *dev) {
     int ret;
     const struct lpm009m360a_config *config = dev->config;
-    ret = gpio_pin_set_dt(&config->disp, 0);
-    if (ret < 0) {
-        return ret;
-    }
+		LOG_DBG("Sleeping display, but not really");
     return 0;
 }
 
@@ -221,21 +213,21 @@ static int lpm009m360a_init(const struct device *dev) {
     //     LOG_ERR("extcomin GPIO port for display not ready");
     //     return -ENODEV;
     // }
-    ret = gpio_pin_configure_dt(&config->extcomin, GPIO_OUTPUT_INACTIVE);
-    if (ret) {
-        LOG_ERR("Couldn't configure extcomin pin");
-        return ret;
-    }
+    // ret = gpio_pin_configure_dt(&config->extcomin, GPIO_OUTPUT_INACTIVE);
+    // if (ret) {
+    //     LOG_ERR("Couldn't configure extcomin pin");
+    //     return ret;
+    // }
 
     // if (!gpio_is_ready_dt(&config->disp)) {
     //     LOG_ERR("disp GPIO port not ready");
     //     return -ENODEV;
     // }
-    ret = gpio_pin_configure_dt(&config->disp, GPIO_OUTPUT);
-    if (ret) {
-        LOG_ERR("Couldn't configure disp pin");
-        return ret;
-    }
+    // ret = gpio_pin_configure_dt(&config->disp, GPIO_OUTPUT);
+    // if (ret) {
+    //     LOG_ERR("Couldn't configure disp pin");
+    //     return ret;
+    // }
     ret = lpm009m360a_reset_display(dev);
     if (ret) {
         LOG_ERR("Couldn't reset display");
@@ -292,8 +284,6 @@ static const struct display_driver_api lpm009m360a_api = {
     const static struct lpm009m360a_config lpm009m360a_config_##inst = {                           \
         .bus = SPI_DT_SPEC_INST_GET(                                                               \
             inst, SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_HOLD_ON_CS | SPI_LOCK_ON, 0),         \
-        .extcomin = GPIO_DT_SPEC_INST_GET(inst, extcomin_gpios),                                   \
-        .disp = GPIO_DT_SPEC_INST_GET(inst, disp_gpios),                                           \
         .width = DT_INST_PROP(inst, width),                                                        \
         .height = DT_INST_PROP(inst, height),                                                      \
         .color_mode = DT_INST_PROP(inst, color_mode),                                              \
