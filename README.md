@@ -1,7 +1,7 @@
 zmk display driver called lpm_view driver based on lpm009m360a jdi display
 to use this module with nice_view pin out, first define `lpm_view_spi` in your keyboard.dts
 ```c++
-lpm_view_spi: &spi2 {
+lpm_view_spi: &<your spi bus> {
     compatible = "nordic,nrf-spim";
     pinctrl-0 = <&spi2_default>;
     pinctrl-1 = <&spi2_sleep>;
